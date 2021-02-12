@@ -27,20 +27,22 @@
 #include <stdlib.h>
 #include "epd1in54v2.h"
 
-Epd::~Epd(){};
-
 Epd::Epd(PinName mosi,
          PinName miso,
          PinName sclk,
          PinName cs,
          PinName dc,
          PinName rst,
-         PinName busy) : EpdIf(mosi, miso, sclk, cs, dc, rst, busy) //
+         PinName busy) : EpdIf(mosi, miso, sclk, cs, dc, rst, busy)
 {
+}
 
-    width = EPD_WIDTH;
-    height = EPD_HEIGHT;
-    rotate = ROTATE_0;
+Epd::Epd(SPI *spi,
+         PinName cs,
+         PinName dc,
+         PinName rst,
+         PinName busy) : EpdIf(spi, cs, dc, rst, busy)
+{
 }
 
 /**
@@ -67,11 +69,11 @@ void Epd::SendData(unsigned char data) //
 void Epd::WaitUntilIdle(void) //
 {
     int cnt{0};
-    while (DigitalRead(m_busy) == 1 && ++cnt<3)
+    while (DigitalRead(m_busy) == 1 && ++cnt<2)
     { //0: busy, 1: idle
-        DelayMs(100);
+        DelayMs(10);
     }
-    DelayMs(200);
+    // DelayMs(200);
 }
 
 // int Epd::Init(const unsigned char *lut)
@@ -416,8 +418,8 @@ void Epd::SetFrameMemory(
 void Epd::DisplayFrame(void) //
 {
     SendCommand(DISPLAY_UPDATE_CONTROL_2);
-    // SendData(0xC4);
     SendData(0xF7);
+    // SendData(0xF4);
     SendCommand(MASTER_ACTIVATION);
     // SendCommand(TERMINATE_FRAME_READ_WRITE);
     WaitUntilIdle();
@@ -427,9 +429,27 @@ void Epd::DisplayPartFrame(void) //
 {
     SendCommand(DISPLAY_UPDATE_CONTROL_2);
     SendData(0xFF);
+    // SendData(0xFC);
     SendCommand(MASTER_ACTIVATION);
     WaitUntilIdle();
 }
+
+
+// void GxEPD2_154_D67::_Update_Full()
+// {
+//   _writeCommand(0x22);
+//   _writeData(0xf4);
+//   _writeCommand(0x20);
+//   _waitWhileBusy("_Update_Full", full_refresh_time);
+// }
+
+// void GxEPD2_154_D67::_Update_Part()
+// {
+//   _writeCommand(0x22);
+//   _writeData(0xfc);
+//   _writeCommand(0x20);
+//   _waitWhileBusy("_Update_Part", partial_refresh_time);
+// }
 
 /**
  *  @brief: private function to specify the memory area for data R/W

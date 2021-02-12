@@ -28,21 +28,31 @@
 #include "epdif.h"
 EpdIf::EpdIf(){
     }
+    
 EpdIf::EpdIf(PinName mosi, 
              PinName miso, 
              PinName sclk, 
              PinName cs, 
              PinName dc, 
              PinName rst, 
-             PinName busy) {
-    m_spi = new SPI(mosi, miso, sclk);
-    m_cs = new DigitalOut(cs);
-    m_dc = new DigitalOut(dc);
-    m_rst = new DigitalOut(rst);
-    m_busy = new DigitalIn(busy);    
+             PinName busy):
+    m_spi(new SPI(mosi, miso, sclk)),
+    m_cs(new DigitalOut(cs)),
+    m_dc(new DigitalOut(dc)),
+    m_rst(new DigitalOut(rst)),
+    m_busy(new DigitalIn(busy)) {
 }
 
-EpdIf::~EpdIf() {
+EpdIf::EpdIf(SPI *spi,
+             PinName cs, 
+             PinName dc, 
+             PinName rst, 
+             PinName busy):
+    m_spi(spi),
+    m_cs(new DigitalOut(cs)),
+    m_dc(new DigitalOut(dc)),
+    m_rst(new DigitalOut(rst)),
+    m_busy(new DigitalIn(busy)) {
 }
 
 void EpdIf::DigitalWrite(DigitalOut* pout, int value) {
@@ -55,7 +65,7 @@ int EpdIf::DigitalRead(DigitalIn* pin) {
 }
 
 void EpdIf::DelayMs(unsigned int delaytime) {
-    wait_ms(delaytime);
+    wait_us(delaytime * 1000);
 }
 
 void EpdIf::SpiTransfer(unsigned char data) {

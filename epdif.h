@@ -41,7 +41,11 @@ public:
           PinName dc, 
           PinName rst, 
           PinName busy);
-    ~EpdIf(void);
+    EpdIf(SPI *spi, 
+          PinName cs, 
+          PinName dc, 
+          PinName rst, 
+          PinName busy);
 
     int  IfInit(void);
     static void DigitalWrite(DigitalOut* put, int value); 

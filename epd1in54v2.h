@@ -78,9 +78,9 @@ extern const unsigned char lut_partial_update[];
 class Epd : EpdIf
 {
 public:
-    unsigned long width;
-    unsigned long height;
-    unsigned int rotate;
+    unsigned long width{EPD_WIDTH};
+    unsigned long height{EPD_HEIGHT};
+    unsigned int rotate{ROTATE_0};
 
     Epd(PinName mosi,
         PinName miso,
@@ -89,7 +89,13 @@ public:
         PinName dc,
         PinName rst,
         PinName busy);
-    ~Epd();
+
+    Epd(SPI *spi,
+        PinName cs,
+        PinName dc,
+        PinName rst,
+        PinName busy);
+
     // int  Init(const unsigned char* lut);
     int LDirInit(void);//new
     int HDirInit(void);//new
